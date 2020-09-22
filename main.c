@@ -7,8 +7,6 @@
 	#include <windows.h>
 #endif
 
-#include <stdbool.h>
-
 //Import SDL
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
@@ -26,11 +24,12 @@ int main(int argc, char* argv[])
 {
 	signal(SIGINT, signal_handler);
 
-	bool no_args = FALSE;
+	//0 means false - 1 true
+	int no_args = 0;
 
 	if(argc == 1)
 	{
-		no_args = TRUE;
+		no_args = 1;
 	}
 	else if (argc != 2)
 	{
@@ -62,9 +61,10 @@ int main(int argc, char* argv[])
 		path = argv[1];
 
 	FILE *fp;
-	errno_t err;
 
 	#if defined _WIN64 || defined _WIN32
+	errno_t err;
+
 	if((err = fopen_s(&fp, path, "r")) != 0)
 	{
 		fprintf(stderr, "Cannot open file '%s': %s\n", path, strerror(err));
