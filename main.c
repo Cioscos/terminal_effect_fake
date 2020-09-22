@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
 		#if defined _WIN64 || defined _WIN32
 			SetConsoleTextAttribute (GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
 		#else
-			printf("\033[0;31m");
+			printf("\033[0;32m");
 		#endif
 		
 		for (size_t i = 0; i < size_string; i++)
