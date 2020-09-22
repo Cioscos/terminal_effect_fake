@@ -3,7 +3,13 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
-#include <windows.h>
+#if defined _WIN64 || defined _WIN32
+	#define OS_WINDOWS 1
+	#include <windows.h>
+#else
+	#define OS_WINDOWS 0
+#endif
+
 #include <stdbool.h>
 
 //Import SDL
@@ -101,8 +107,11 @@ int main(int argc, char* argv[])
 		unsigned int size_string = strlen(string);
 
 		//Change color of writes
-		SetConsoleTextAttribute (GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
-
+		if(OS_WINDOWS)
+			SetConsoleTextAttribute (GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
+		else
+			printf("\033[0;31m");
+		
 		for (size_t i = 0; i < size_string; i++)
 		{
 			if(string[i] == '\\')
@@ -123,7 +132,10 @@ int main(int argc, char* argv[])
 			
 		}
 
-		SetConsoleTextAttribute (GetStdHandle(STD_OUTPUT_HANDLE), 0x07);
+		if(OS_WINDOWS)
+			SetConsoleTextAttribute (GetStdHandle(STD_OUTPUT_HANDLE), 0x07);
+		else
+			printf("\033[0m");
 	}
 
 	SDL_Quit();
@@ -132,7 +144,10 @@ int main(int argc, char* argv[])
 
 void signal_handler(int signal_value)
 {
-	SetConsoleTextAttribute (GetStdHandle(STD_OUTPUT_HANDLE), 0x07);
+	if(OS_WINDOWS)
+			SetConsoleTextAttribute (GetStdHandle(STD_OUTPUT_HANDLE), 0x07);
+		else
+			printf("\033[0m");
 
 	//Clean up resources
 	Mix_FreeMusic(music);
