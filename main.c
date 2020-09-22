@@ -4,10 +4,7 @@
 #include <unistd.h>
 #include <signal.h>
 #if defined _WIN64 || defined _WIN32
-	#define OS_WINDOWS 1
 	#include <windows.h>
-#else
-	#define OS_WINDOWS 0
 #endif
 
 #include <stdbool.h>
@@ -67,10 +64,17 @@ int main(int argc, char* argv[])
 	FILE *fp;
 	errno_t err;
 
-	if((err = fopen_s(&fp, path, "r")) != 0) 
+	#if defined _WIN64 || defined _WIN32
+	if((err = fopen_s(&fp, path, "r")) != 0)
 	{
 		fprintf(stderr, "Cannot open file '%s': %s\n", path, strerror(err));
 	}
+	#else
+	if ((fp=fopen(path, "r")) == NULL)
+	{
+		fprintf(stderr, "Cannot open the file '%s\n", path);
+	}
+	#endif
 	else
 	{
 		char *string;
@@ -107,10 +111,11 @@ int main(int argc, char* argv[])
 		unsigned int size_string = strlen(string);
 
 		//Change color of writes
-		if(OS_WINDOWS)
+		#if defined _WIN64 || defined _WIN32
 			SetConsoleTextAttribute (GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
-		else
+		#else
 			printf("\033[0;31m");
+		#endif
 		
 		for (size_t i = 0; i < size_string; i++)
 		{
@@ -132,10 +137,11 @@ int main(int argc, char* argv[])
 			
 		}
 
-		if(OS_WINDOWS)
+		#if defined _WIN64 || defined _WIN32
 			SetConsoleTextAttribute (GetStdHandle(STD_OUTPUT_HANDLE), 0x07);
-		else
+		#else
 			printf("\033[0m");
+		#endif
 	}
 
 	SDL_Quit();
@@ -144,10 +150,11 @@ int main(int argc, char* argv[])
 
 void signal_handler(int signal_value)
 {
-	if(OS_WINDOWS)
-			SetConsoleTextAttribute (GetStdHandle(STD_OUTPUT_HANDLE), 0x07);
-		else
-			printf("\033[0m");
+	#if defined _WIN64 || defined _WIN32
+		SetConsoleTextAttribute (GetStdHandle(STD_OUTPUT_HANDLE), 0x07);
+	#else
+		printf("\033[0m");
+	#endif
 
 	//Clean up resources
 	Mix_FreeMusic(music);
